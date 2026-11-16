@@ -267,6 +267,7 @@ h1 em{
 /* 题目 —— 一题一张卡 */
 .q{
   position:relative;
+  scroll-margin-top:28px;
   margin-top:14px;
   padding:20px 22px 18px;
   background:#fff;
@@ -564,6 +565,7 @@ h1 em{
    部分二 · 章节测验习题（客观题）
    ===================================================================== */
 .part{
+  scroll-margin-top:28px;
   margin-top:52px;
   padding-top:36px;
   border-top:1px solid var(--line);
@@ -667,19 +669,52 @@ h1 em{
 .oq-opts{
   display:grid;
   grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:3px 26px;
-  margin-top:9px;
+  gap:7px 12px;
+  margin-top:11px;
 }
-.oq-opts span{
-  font-size:14px;
-  line-height:1.7;
+.oq-opts.judge{
+  grid-template-columns:repeat(2, 96px);
+  gap:10px;
+}
+.oq-opts .opt{
+  display:flex;
+  align-items:baseline;
+  gap:9px;
+  padding:7px 12px;
+  font:14px/1.6 inherit;
   color:var(--ink2);
+  text-align:left;
+  background:#fbfbfe;
+  border:1px solid #ebedf5;
+  border-radius:8px;
+  cursor:pointer;
+  transition:border-color .16s, background .16s, color .16s, box-shadow .16s;
 }
-.oq-opts b{
-  margin-right:6px;
+.oq-opts .opt:hover{border-color:#cfd2e2;background:#fff}
+.oq-opts .opt b{
+  flex:0 0 auto;
   font-weight:700;
   color:var(--ink3);
 }
+.oq-opts .opt.on{
+  border-color:#bfc2da;
+  background:#f5f6fd;
+  color:var(--ink);
+  box-shadow:inset 0 0 0 1px rgba(67,56,202,.09);
+}
+.oq-opts .opt.on b{color:var(--accent)}
+.oq-opts .opt.ok{
+  border-color:#a9d8bd;
+  background:#f2fbf6;
+  color:#146c3c;
+}
+.oq-opts .opt.ok b{color:#15803d}
+.oq-opts .opt.bad{
+  border-color:#f0bab5;
+  background:#fdf5f4;
+  color:#a92a20;
+}
+.oq-opts .opt.bad b{color:#c9251a}
 .oq-ans{
   margin-top:8px;
   font-size:12.5px;
@@ -730,11 +765,186 @@ h1 em{
   }
 }
 
+
+/* ---------------- 部分二 · 作答交互 ---------------- */
+.oq-fill{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px 12px;
+  margin-top:11px;
+}
+.blank{
+  width:158px;
+  font:14px/1.5 inherit;
+  color:var(--ink);
+  background:#fbfbfe;
+  border:1px solid #e4e6ee;
+  border-radius:8px;
+  padding:7px 11px;
+  outline:none;
+  transition:border-color .16s, background .16s, box-shadow .16s;
+}
+.blank::placeholder{color:#c2c4d1}
+.blank:focus{
+  background:#fff;
+  border-color:#c3c5d8;
+  box-shadow:0 0 0 3px rgba(67,56,202,.07);
+}
+.blank.ok{border-color:#a9d8bd;background:#f2fbf6}
+.blank.bad{border-color:#f0bab5;background:#fdf5f4}
+
+.oq-check{
+  margin-top:10px;
+  font:12.5px inherit;
+  color:var(--ink2);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 15px;
+  cursor:pointer;
+  transition:color .16s, border-color .16s;
+}
+.oq-check:hover{color:var(--accent);border-color:#c9cbdd}
+
+.oq-fb{
+  display:none;
+  margin-top:9px;
+  font-size:12.5px;
+}
+.oq.done .oq-fb{display:block}
+.fb-ok{color:#15803d;font-weight:700}
+.fb-bad{color:#b3261e;font-weight:700}
+.fb-note{margin-left:8px;font-weight:400;color:var(--ink4)}
+
+.part-acts{
+  margin-top:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.part-acts .part-toggle{margin-top:0}
+.part-score{
+  font-size:12.5px;
+  color:var(--ink3);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
+}
+
+/* 作答后即使处于"遮住答案"状态，也把该题答案显示出来 */
+.oq.done .oq-ans b{
+  color:var(--ink);
+  background:#f1f2f7;
+  letter-spacing:.02em;
+  text-indent:0;
+  min-width:0;
+}
+
+@media print{
+  .oq-opts{grid-template-columns:repeat(2, minmax(0,1fr));gap:0 14pt}
+  .oq-opts.judge{grid-template-columns:repeat(2, 60pt)}
+  .oq-opts .opt{
+    display:block;
+    padding:1pt 0;
+    border:0!important;
+    background:none!important;
+    color:#000!important;
+  }
+  .oq-opts .opt b{margin-right:5pt;color:#000!important}
+  .part-sub{display:none}
+  .oq-fill .blank{display:none}
+  .oq-fb,.oq-check,.part-score,.part-acts{display:none!important}
+}
+
+
+/* =====================================================================
+   外框之外的快速跳转导航
+   ===================================================================== */
+.rail{
+  position:fixed;
+  top:50%;
+  left:calc(50% + 474px);
+  transform:translateY(-50%) translateX(-6px);
+  z-index:40;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  padding:12px 11px 11px;
+  background:rgba(255,255,255,.88);
+  border:1px solid #dfe2ed;
+  border-radius:14px;
+  box-shadow:0 20px 44px -28px rgba(21,23,54,.45);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s var(--ease), transform .3s var(--ease);
+}
+.rail.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(-50%);
+}
+.rail-h{
+  font-size:9.5px;
+  letter-spacing:.24em;
+  font-weight:700;
+  color:var(--ink4);
+  text-align:center;
+}
+.rail-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 26px);
+  gap:4px;
+}
+.rail-grid a{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:22px;
+  border-radius:6px;
+  font-size:10.5px;
+  font-weight:700;
+  color:var(--c);
+  text-decoration:none;
+  font-variant-numeric:tabular-nums;
+  opacity:.78;
+  transition:background .16s, color .16s, opacity .16s;
+}
+.rail-grid a:hover{background:#f3f4fb;opacity:1}
+.rail-grid a.on{background:var(--c);color:#fff;opacity:1}
+.rail-part{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  height:25px;
+  margin-top:2px;
+  border-radius:7px;
+  background:#f4f5fa;
+  color:var(--ink2);
+  font-size:11px;
+  font-weight:700;
+  text-decoration:none;
+  transition:background .16s, color .16s;
+}
+.rail-part b{font-size:9.5px;font-weight:700;color:var(--ink4)}
+.rail-part:hover{background:#eceef8}
+.rail-part.on{background:#15161c;color:#fff}
+.rail-part.on b{color:rgba(255,255,255,.62)}
+
+@media (max-width:1279px){ .rail{display:none} }
+
+@media print{
+  .rail{display:none!important}
+}
+
 </style>
 </head>
 <body>
 <div class="shell" style="--stripe:#4f46e5 0%, #4f46e5 17%,#0d9488 17%, #0d9488 33%,#d97706 33%, #d97706 50%,#7c3aed 50%, #7c3aed 67%,#db2777 67%, #db2777 83%,#2563eb 83%, #2563eb 100%">
-<header class="s-head"><div class="kicker">COURSE STUDY GUIDE</div><h1>快速原型技术及其应用<em>章节思考题 · 测验习题</em></h1><p class="lede">答案依据课程 13 份课件整理，<b>按考试作答写成可直接默写的段落</b>；Word 中标注的重点保留为<span class="hl">红字</span>。后附 50 道章节测验题（单选 / 多选 / 判断 / 填空），可一键遮住答案自测。题干右侧星标可收藏置顶，答案可直接点击修改，改动只存在本机。</p></header>
+<header class="s-head"><div class="kicker">COURSE STUDY GUIDE</div><h1>快速原型技术及其应用<em>章节思考题 · 测验习题</em></h1><p class="lede">答案依据课程 13 份课件整理，<b>按考试作答写成可直接默写的段落</b>；Word 中标注的重点保留为<span class="hl">红字</span>。后附 50 道章节测验题（单选 / 多选 / 判断 / 填空），可直接作答、即时判对错。题干右侧星标可收藏置顶，答案可直接点击修改，改动只存在本机。</p></header>
 <nav class="s-nav"><div class="chips">
 <a href="#ch1" style="--ch:#4f46e5"><i></i>一 概论</a>
 <a href="#ch2" style="--ch:#0d9488"><i></i>二 数据处理</a>
@@ -960,7 +1170,7 @@ h1 em{
 </div></article>
 </section>
 </div>
-<section class="part" id="part2"><div class="part-head"><div class="no">PART  Ⅱ</div><h2>章节测验习题<em>50 题</em></h2><div class="bar"></div><p class="part-sub">来自 9 套章节测验，按题型归类；题号连续，答案紧随每题。</p><button class="part-toggle" id="btnAns" type="button">隐藏答案</button></div><div class="qtype" data-type="单选题"><div class="qt-head"><span class="qt-name">单选题</span><span class="qt-n">9 题</span></div><div class="oq-list"><div class="oq" data-no="1" data-search="不属于快速成型技术的特点是（　） 可加工复杂零件 周期短，成本低 实现一体化制造 限于塑料材料 D"><span class="oq-n">01</span><div class="oq-main"><p class="oq-q">不属于快速成型技术的特点是（　）</p><div class="oq-opts"><span><b>A</b>可加工复杂零件</span><span><b>B</b>周期短，成本低</span><span><b>C</b>实现一体化制造</span><span><b>D</b>限于塑料材料</span></div><p class="oq-ans">答案<b>D</b></p></div></div><div class="oq" data-no="2" data-search="快速成型技术在成型加工前需要将模型文件转换为什么数据格式（　）？ SAL STL SAE RAT B"><span class="oq-n">02</span><div class="oq-main"><p class="oq-q">快速成型技术在成型加工前需要将模型文件转换为什么数据格式（　）？</p><div class="oq-opts"><span><b>A</b>SAL</span><span><b>B</b>STL</span><span><b>C</b>SAE</span><span><b>D</b>RAT</span></div><p class="oq-ans">答案<b>B</b></p></div></div><div class="oq" data-no="3" data-search="立体光固化成型设备使用的成型材料为（　） 光敏树脂 尼龙粉末 陶瓷粉末 金属粉末 A"><span class="oq-n">03</span><div class="oq-main"><p class="oq-q">立体光固化成型设备使用的成型材料为（　）</p><div class="oq-opts"><span><b>A</b>光敏树脂</span><span><b>B</b>尼龙粉末</span><span><b>C</b>陶瓷粉末</span><span><b>D</b>金属粉末</span></div><p class="oq-ans">答案<b>A</b></p></div></div><div class="oq" data-no="4" data-search="以下哪种快速成型技术在金属增材制造中使用最多（　） SLS SLA FDM 3DP A"><span class="oq-n">04</span><div class="oq-main"><p class="oq-q">以下哪种快速成型技术在金属增材制造中使用最多（　）</p><div class="oq-opts"><span><b>A</b>SLS</span><span><b>B</b>SLA</span><span><b>C</b>FDM</span><span><b>D</b>3DP</span></div><p class="oq-ans">答案<b>A</b></p></div></div><div class="oq" data-no="5" data-search="FDM 3D打印技术成型件的后处理过程中最关键的步骤是（　） 取出成型件 打磨成型件 去除支撑部分 涂覆成型件 C"><span class="oq-n">05</span><div class="oq-main"><p class="oq-q">FDM 3D打印技术成型件的后处理过程中最关键的步骤是（　）</p><div class="oq-opts"><span><b>A</b>取出成型件</span><span><b>B</b>打磨成型件</span><span><b>C</b>去除支撑部分</span><span><b>D</b>涂覆成型件</span></div><p class="oq-ans">答案<b>C</b></p></div></div><div class="oq" data-no="6" data-search="以下快速成型工艺中，不需要使用激光器的是（　） SLA FDM SLS LOM B"><span class="oq-n">06</span><div class="oq-main"><p class="oq-q">以下快速成型工艺中，不需要使用激光器的是（　）</p><div class="oq-opts"><span><b>A</b>SLA</span><span><b>B</b>FDM</span><span><b>C</b>SLS</span><span><b>D</b>LOM</span></div><p class="oq-ans">答案<b>B</b></p></div></div><div class="oq" data-no="7" data-search="以下四种快速成型工艺中不需要激光系统的是____。 SLA 3DP SLS LOM B"><span class="oq-n">07</span><div class="oq-main"><p class="oq-q">以下四种快速成型工艺中不需要激光系统的是____。</p><div class="oq-opts"><span><b>A</b>SLA</span><span><b>B</b>3DP</span><span><b>C</b>SLS</span><span><b>D</b>LOM</span></div><p class="oq-ans">答案<b>B</b></p></div></div><div class="oq" data-no="8" data-search="以下四种快速成型工艺中不需要支撑结构系统的是____。 FDM 3DP SLS SLA C"><span class="oq-n">08</span><div class="oq-main"><p class="oq-q">以下四种快速成型工艺中不需要支撑结构系统的是____。</p><div class="oq-opts"><span><b>A</b>FDM</span><span><b>B</b>3DP</span><span><b>C</b>SLS</span><span><b>D</b>SLA</span></div><p class="oq-ans">答案<b>C</b></p></div></div><div class="oq" data-no="9" data-search="以下四种快速成型工艺中不需要支撑结构系统的是____。（同题干，选项顺序不同） FDM 3DP SLA LOM D"><span class="oq-n">09</span><div class="oq-main"><p class="oq-q">以下四种快速成型工艺中不需要支撑结构系统的是____。（同题干，选项顺序不同）</p><div class="oq-opts"><span><b>A</b>FDM</span><span><b>B</b>3DP</span><span><b>C</b>SLA</span><span><b>D</b>LOM</span></div><p class="oq-ans">答案<b>D</b></p></div></div></div></div><div class="qtype" data-type="多选题"><div class="qt-head"><span class="qt-name">多选题</span><span class="qt-n">1 题</span></div><div class="oq-list"><div class="oq" data-no="10" data-search="和其他先进制造技术相比，快速原型技术具有如下特点（　）。 自由成型制造 制造过程快速 添加式和数字化驱动成型方式 技术高度集成 突出的经济效益 广泛的应用领域 ABCDEF"><span class="oq-n">10</span><div class="oq-main"><p class="oq-q">和其他先进制造技术相比，快速原型技术具有如下特点（　）。</p><div class="oq-opts"><span><b>A</b>自由成型制造</span><span><b>B</b>制造过程快速</span><span><b>C</b>添加式和数字化驱动成型方式</span><span><b>D</b>技术高度集成</span><span><b>E</b>突出的经济效益</span><span><b>F</b>广泛的应用领域</span></div><p class="oq-ans">答案<b>ABCDEF</b></p></div></div></div></div><div class="qtype" data-type="判断题"><div class="qt-head"><span class="qt-name">判断题</span><span class="qt-n">23 题</span></div><div class="oq-list"><div class="oq" data-no="11" data-search="增材制造是一种利用三维模型数据通过连接材料获得实体的工艺，通常为逐层叠加，是与去除材料的制造方法截然不同的工艺。（　） 对"><span class="oq-n">11</span><div class="oq-main"><p class="oq-q">增材制造是一种利用三维模型数据通过连接材料获得实体的工艺，通常为逐层叠加，是与去除材料的制造方法截然不同的工艺。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="12" data-search="所有的增材制造系统按使用材料的形态方式可以简单地分为：液态材料，固态材料，粉末材料。（　） 对"><span class="oq-n">12</span><div class="oq-main"><p class="oq-q">所有的增材制造系统按使用材料的形态方式可以简单地分为：液态材料，固态材料，粉末材料。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="13" data-search="快速成型技术也被称为增材制造，传统加工技术被称为减材或等材技术。（　） 对"><span class="oq-n">13</span><div class="oq-main"><p class="oq-q">快速成型技术也被称为增材制造，传统加工技术被称为减材或等材技术。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="14" data-search="3D实体化模型，由两种方式获得，一个是计算机设计模型，一个是物理实体或零件的扫描模型。（　） 对"><span class="oq-n">14</span><div class="oq-main"><p class="oq-q">3D实体化模型，由两种方式获得，一个是计算机设计模型，一个是物理实体或零件的扫描模型。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="15" data-search="UG、Pro/E、Solidworks、AutoCAD、3Ds MAX都是常用的CAD模型的三维造型软件有。（　） 对"><span class="oq-n">15</span><div class="oq-main"><p class="oq-q">UG、Pro/E、Solidworks、AutoCAD、3Ds MAX都是常用的CAD模型的三维造型软件有。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="16" data-search="STL这种文件格式是利用最简单的多边形和三角形逼近模型表面。（　） 错"><span class="oq-n">16</span><div class="oq-main"><p class="oq-q">STL这种文件格式是利用最简单的多边形和三角形逼近模型表面。（　）</p><p class="oq-ans">答案<b>错</b></p></div></div><div class="oq" data-no="17" data-search="SLA技术可打印金属部件（　） 错"><span class="oq-n">17</span><div class="oq-main"><p class="oq-q">SLA技术可打印金属部件（　）</p><p class="oq-ans">答案<b>错</b></p></div></div><div class="oq" data-no="18" data-search="光敏树脂是在紫外光的照射下能迅速发生光聚合反应，分子量急剧增大，材料也就从液态转变成固态。（　） 对"><span class="oq-n">18</span><div class="oq-main"><p class="oq-q">光敏树脂是在紫外光的照射下能迅速发生光聚合反应，分子量急剧增大，材料也就从液态转变成固态。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="19" data-search="光固化成型工艺中用来刮去每层多余树脂的装置是刮板或刮刀。 对"><span class="oq-n">19</span><div class="oq-main"><p class="oq-q">光固化成型工艺中用来刮去每层多余树脂的装置是刮板或刮刀。</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="20" data-search="LOM打印技术的原材料是金属粉末。（　） 错"><span class="oq-n">20</span><div class="oq-main"><p class="oq-q">LOM打印技术的原材料是金属粉末。（　）</p><p class="oq-ans">答案<b>错</b></p></div></div><div class="oq" data-no="21" data-search="叠层实体制造工艺常用激光器为CO2激光器。 对"><span class="oq-n">21</span><div class="oq-main"><p class="oq-q">叠层实体制造工艺常用激光器为CO2激光器。</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="22" data-search="SLS技术打印的金属零部件致密度不能达到100%。（　） 对"><span class="oq-n">22</span><div class="oq-main"><p class="oq-q">SLS技术打印的金属零部件致密度不能达到100%。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="23" data-search="SLS技术最重要的使用领域是塑料材料成型。（　） 错"><span class="oq-n">23</span><div class="oq-main"><p class="oq-q">SLS技术最重要的使用领域是塑料材料成型。（　）</p><p class="oq-ans">答案<b>错</b></p></div></div><div class="oq" data-no="24" data-search="SLS技术是指选区激光烧结技术。（　） 对"><span class="oq-n">24</span><div class="oq-main"><p class="oq-q">SLS技术是指选区激光烧结技术。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="25" data-search="熔融沉积快速成型工艺可以同时成型两种或以上材料（　）。 对"><span class="oq-n">25</span><div class="oq-main"><p class="oq-q">熔融沉积快速成型工艺可以同时成型两种或以上材料（　）。</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="26" data-search="FDM中要将材料加热到其熔点以上。加热的设备主要是喷头。（　） 对"><span class="oq-n">26</span><div class="oq-main"><p class="oq-q">FDM中要将材料加热到其熔点以上。加热的设备主要是喷头。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="27" data-search="FDM 3D打印技术成型件的后处理过程中最关键的步骤是去除支撑部分。（　） 对"><span class="oq-n">27</span><div class="oq-main"><p class="oq-q">FDM 3D打印技术成型件的后处理过程中最关键的步骤是去除支撑部分。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="28" data-search="3D打印机可以自由移动，并制造出比自身体积还要庞大的物品（　） 对"><span class="oq-n">28</span><div class="oq-main"><p class="oq-q">3D打印机可以自由移动，并制造出比自身体积还要庞大的物品（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="29" data-search="3D打印技术只是增材制造的一种（　） 对"><span class="oq-n">29</span><div class="oq-main"><p class="oq-q">3D打印技术只是增材制造的一种（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="30" data-search="3D打印技术制造的金属零部件性能可超过锻造水平。（　） 错"><span class="oq-n">30</span><div class="oq-main"><p class="oq-q">3D打印技术制造的金属零部件性能可超过锻造水平。（　）</p><p class="oq-ans">答案<b>错</b></p></div></div><div class="oq" data-no="31" data-search="3DP打印快速成型的精度高于光固化成型精度。（　） 错"><span class="oq-n">31</span><div class="oq-main"><p class="oq-q">3DP打印快速成型的精度高于光固化成型精度。（　）</p><p class="oq-ans">答案<b>错</b></p></div></div><div class="oq" data-no="32" data-search="快速成型技术的优势之一在于能将设计师的构思模型快速变为实物模型。（　） 对"><span class="oq-n">32</span><div class="oq-main"><p class="oq-q">快速成型技术的优势之一在于能将设计师的构思模型快速变为实物模型。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div><div class="oq" data-no="33" data-search="快速成型技术在金属增材制造中使用最多的技术是SLS。（　） 对"><span class="oq-n">33</span><div class="oq-main"><p class="oq-q">快速成型技术在金属增材制造中使用最多的技术是SLS。（　）</p><p class="oq-ans">答案<b>对</b></p></div></div></div></div><div class="qtype" data-type="填空题"><div class="qt-head"><span class="qt-name">填空题</span><span class="qt-n">17 题</span></div><div class="oq-list"><div class="oq" data-no="34" data-search="STL文件逼近CAD模型的精度指标表面上是小三角形的数量，实质上是三角形平面逼近曲面时的____的大小。 弦差"><span class="oq-n">34</span><div class="oq-main"><p class="oq-q">STL文件逼近CAD模型的精度指标表面上是小三角形的数量，实质上是三角形平面逼近曲面时的____的大小。</p><p class="oq-ans">答案<b>弦差</b></p></div></div><div class="oq" data-no="35" data-search="设计三维模型方法有____和反求工程两种主要途径。 概念设计"><span class="oq-n">35</span><div class="oq-main"><p class="oq-q">设计三维模型方法有____和反求工程两种主要途径。</p><p class="oq-ans">答案<b>概念设计</b></p></div></div><div class="oq" data-no="36" data-search="在实际快速原型制作中，如果所要制作的原型尺寸相对于快速成型系统台面尺寸过大或过小，就必须对STL模型进行（　）处理或者进行（　）处理。 拼接；（第二空答案原图缺失）"><span class="oq-n">36</span><div class="oq-main"><p class="oq-q">在实际快速原型制作中，如果所要制作的原型尺寸相对于快速成型系统台面尺寸过大或过小，就必须对STL模型进行（　）处理或者进行（　）处理。</p><p class="oq-ans">答案<b>拼接；（第二空答案原图缺失）</b></p></div></div><div class="oq" data-no="37" data-search="快速成型系统切片软件的切片方式一般有____和____两种形式。 STL切片；直接切片"><span class="oq-n">37</span><div class="oq-main"><p class="oq-q">快速成型系统切片软件的切片方式一般有____和____两种形式。</p><p class="oq-ans">答案<b>STL切片；直接切片</b></p></div></div><div class="oq" data-no="38" data-search="STL切片包括____切片、____切片、____切片、____切片。（注：按课件中学习的先后顺序回答） 直接STL；容错；顶层厚；适应性"><span class="oq-n">38</span><div class="oq-main"><p class="oq-q">STL切片包括____切片、____切片、____切片、____切片。（注：按课件中学习的先后顺序回答）</p><p class="oq-ans">答案<b>直接STL；容错；顶层厚；适应性</b></p></div></div><div class="oq" data-no="39" data-search="美国3D Systems公司开发的____文件格式可以被大多数快速成型机所接受，因此被工业界认为是目前快速成型数据的标准格式。（注：用大写字母回答） STL"><span class="oq-n">39</span><div class="oq-main"><p class="oq-q">美国3D Systems公司开发的____文件格式可以被大多数快速成型机所接受，因此被工业界认为是目前快速成型数据的标准格式。（注：用大写字母回答）</p><p class="oq-ans">答案<b>STL</b></p></div></div><div class="oq" data-no="40" data-search="快速成型过程总体上分为三个阶段，分别是：____、分层叠加成型(自由成型)、____。 前处理；后处理"><span class="oq-n">40</span><div class="oq-main"><p class="oq-q">快速成型过程总体上分为三个阶段，分别是：____、分层叠加成型(自由成型)、____。</p><p class="oq-ans">答案<b>前处理；后处理</b></p></div></div><div class="oq" data-no="41" data-search="SLA原型的尺寸精度可以达到（　）mm。 ±0.1"><span class="oq-n">41</span><div class="oq-main"><p class="oq-q">SLA原型的尺寸精度可以达到（　）mm。</p><p class="oq-ans">答案<b>±0.1</b></p></div></div><div class="oq" data-no="42" data-search="叠层实体制造工艺涂布工艺包括____和____。 涂布形状；涂布厚度"><span class="oq-n">42</span><div class="oq-main"><p class="oq-q">叠层实体制造工艺涂布工艺包括____和____。</p><p class="oq-ans">答案<b>涂布形状；涂布厚度</b></p></div></div><div class="oq" data-no="43" data-search="选择性激光烧结工艺又称为选区激光烧结，其英文缩写是（　）。 SLS"><span class="oq-n">43</span><div class="oq-main"><p class="oq-q">选择性激光烧结工艺又称为选区激光烧结，其英文缩写是（　）。</p><p class="oq-ans">答案<b>SLS</b></p></div></div><div class="oq" data-no="44" data-search="利用选择性激光烧结工艺获得的制件表面精度（　）于利用光固化成型工艺获得的表面精度。 低"><span class="oq-n">44</span><div class="oq-main"><p class="oq-q">利用选择性激光烧结工艺获得的制件表面精度（　）于利用光固化成型工艺获得的表面精度。</p><p class="oq-ans">答案<b>低</b></p></div></div><div class="oq" data-no="45" data-search="主要使用薄片材料为成型材料的快速成型技术是____。（注：用大写英文缩写回答） LOM"><span class="oq-n">45</span><div class="oq-main"><p class="oq-q">主要使用薄片材料为成型材料的快速成型技术是____。（注：用大写英文缩写回答）</p><p class="oq-ans">答案<b>LOM</b></p></div></div><div class="oq" data-no="46" data-search="快速成型的各种技术中使用光敏树脂的技术是____。（注：用大写英文缩写字母回答） SLA"><span class="oq-n">46</span><div class="oq-main"><p class="oq-q">快速成型的各种技术中使用光敏树脂的技术是____。（注：用大写英文缩写字母回答）</p><p class="oq-ans">答案<b>SLA</b></p></div></div><div class="oq" data-no="47" data-search="____成型工艺可成型的材料包括塑料粉末、陶瓷粉末、金属粉末等材料。（注：用大写英文缩写回答） SLS"><span class="oq-n">47</span><div class="oq-main"><p class="oq-q">____成型工艺可成型的材料包括塑料粉末、陶瓷粉末、金属粉末等材料。（注：用大写英文缩写回答）</p><p class="oq-ans">答案<b>SLS</b></p></div></div><div class="oq" data-no="48" data-search="和传统去除材料的加工制造方式相比较，快速成型制造属于____制造。 增材"><span class="oq-n">48</span><div class="oq-main"><p class="oq-q">和传统去除材料的加工制造方式相比较，快速成型制造属于____制造。</p><p class="oq-ans">答案<b>增材</b></p></div></div><div class="oq" data-no="49" data-search="软模通常指的是____模具。 硅橡胶"><span class="oq-n">49</span><div class="oq-main"><p class="oq-q">软模通常指的是____模具。</p><p class="oq-ans">答案<b>硅橡胶</b></p></div></div><div class="oq" data-no="50" data-search="常用的快速制模方法有____、过渡模具和____。 软模；硬模"><span class="oq-n">50</span><div class="oq-main"><p class="oq-q">常用的快速制模方法有____、过渡模具和____。</p><p class="oq-ans">答案<b>软模；硬模</b></p></div></div></div></div></section>
+<section class="part ans-off" id="part2"><div class="part-head"><div class="no">PART  Ⅱ</div><h2>章节测验习题<em>50 题</em></h2><div class="bar"></div><p class="part-sub">来自 9 套章节测验，按题型归类；题号连续。选择题点选项、判断题点对错、填空题直接输入，作答后立即判对错。</p><div class="part-acts"><button class="part-toggle" id="btnAns" type="button">显示全部答案</button><button class="part-toggle" id="btnReset" type="button">重做</button><span class="part-score" id="score">已答 0 / 50 · 正确 0</span></div></div><div class="qtype" data-type="单选题"><div class="qt-head"><span class="qt-name">单选题</span><span class="qt-n">9 题</span></div><div class="oq-list"><div class="oq" data-no="1" data-type="单选题" data-ans="D" data-search="不属于快速成型技术的特点是（　） 可加工复杂零件 周期短，成本低 实现一体化制造 限于塑料材料 D"><span class="oq-n">01</span><div class="oq-main"><p class="oq-q">不属于快速成型技术的特点是（　）</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>可加工复杂零件</button><button class="opt" type="button" data-k="B"><b>B</b>周期短，成本低</button><button class="opt" type="button" data-k="C"><b>C</b>实现一体化制造</button><button class="opt" type="button" data-k="D"><b>D</b>限于塑料材料</button></div><p class="oq-ans">答案<b>D</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="2" data-type="单选题" data-ans="B" data-search="快速成型技术在成型加工前需要将模型文件转换为什么数据格式（　）？ SAL STL SAE RAT B"><span class="oq-n">02</span><div class="oq-main"><p class="oq-q">快速成型技术在成型加工前需要将模型文件转换为什么数据格式（　）？</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>SAL</button><button class="opt" type="button" data-k="B"><b>B</b>STL</button><button class="opt" type="button" data-k="C"><b>C</b>SAE</button><button class="opt" type="button" data-k="D"><b>D</b>RAT</button></div><p class="oq-ans">答案<b>B</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="3" data-type="单选题" data-ans="A" data-search="立体光固化成型设备使用的成型材料为（　） 光敏树脂 尼龙粉末 陶瓷粉末 金属粉末 A"><span class="oq-n">03</span><div class="oq-main"><p class="oq-q">立体光固化成型设备使用的成型材料为（　）</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>光敏树脂</button><button class="opt" type="button" data-k="B"><b>B</b>尼龙粉末</button><button class="opt" type="button" data-k="C"><b>C</b>陶瓷粉末</button><button class="opt" type="button" data-k="D"><b>D</b>金属粉末</button></div><p class="oq-ans">答案<b>A</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="4" data-type="单选题" data-ans="A" data-search="以下哪种快速成型技术在金属增材制造中使用最多（　） SLS SLA FDM 3DP A"><span class="oq-n">04</span><div class="oq-main"><p class="oq-q">以下哪种快速成型技术在金属增材制造中使用最多（　）</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>SLS</button><button class="opt" type="button" data-k="B"><b>B</b>SLA</button><button class="opt" type="button" data-k="C"><b>C</b>FDM</button><button class="opt" type="button" data-k="D"><b>D</b>3DP</button></div><p class="oq-ans">答案<b>A</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="5" data-type="单选题" data-ans="C" data-search="FDM 3D打印技术成型件的后处理过程中最关键的步骤是（　） 取出成型件 打磨成型件 去除支撑部分 涂覆成型件 C"><span class="oq-n">05</span><div class="oq-main"><p class="oq-q">FDM 3D打印技术成型件的后处理过程中最关键的步骤是（　）</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>取出成型件</button><button class="opt" type="button" data-k="B"><b>B</b>打磨成型件</button><button class="opt" type="button" data-k="C"><b>C</b>去除支撑部分</button><button class="opt" type="button" data-k="D"><b>D</b>涂覆成型件</button></div><p class="oq-ans">答案<b>C</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="6" data-type="单选题" data-ans="B" data-search="以下快速成型工艺中，不需要使用激光器的是（　） SLA FDM SLS LOM B"><span class="oq-n">06</span><div class="oq-main"><p class="oq-q">以下快速成型工艺中，不需要使用激光器的是（　）</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>SLA</button><button class="opt" type="button" data-k="B"><b>B</b>FDM</button><button class="opt" type="button" data-k="C"><b>C</b>SLS</button><button class="opt" type="button" data-k="D"><b>D</b>LOM</button></div><p class="oq-ans">答案<b>B</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="7" data-type="单选题" data-ans="B" data-search="以下四种快速成型工艺中不需要激光系统的是____。 SLA 3DP SLS LOM B"><span class="oq-n">07</span><div class="oq-main"><p class="oq-q">以下四种快速成型工艺中不需要激光系统的是____。</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>SLA</button><button class="opt" type="button" data-k="B"><b>B</b>3DP</button><button class="opt" type="button" data-k="C"><b>C</b>SLS</button><button class="opt" type="button" data-k="D"><b>D</b>LOM</button></div><p class="oq-ans">答案<b>B</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="8" data-type="单选题" data-ans="C" data-search="以下四种快速成型工艺中不需要支撑结构系统的是____。 FDM 3DP SLS SLA C"><span class="oq-n">08</span><div class="oq-main"><p class="oq-q">以下四种快速成型工艺中不需要支撑结构系统的是____。</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>FDM</button><button class="opt" type="button" data-k="B"><b>B</b>3DP</button><button class="opt" type="button" data-k="C"><b>C</b>SLS</button><button class="opt" type="button" data-k="D"><b>D</b>SLA</button></div><p class="oq-ans">答案<b>C</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="9" data-type="单选题" data-ans="D" data-search="以下四种快速成型工艺中不需要支撑结构系统的是____。（同题干，选项顺序不同） FDM 3DP SLA LOM D"><span class="oq-n">09</span><div class="oq-main"><p class="oq-q">以下四种快速成型工艺中不需要支撑结构系统的是____。（同题干，选项顺序不同）</p><div class="oq-opts" data-multi="0"><button class="opt" type="button" data-k="A"><b>A</b>FDM</button><button class="opt" type="button" data-k="B"><b>B</b>3DP</button><button class="opt" type="button" data-k="C"><b>C</b>SLA</button><button class="opt" type="button" data-k="D"><b>D</b>LOM</button></div><p class="oq-ans">答案<b>D</b></p><p class="oq-fb" aria-live="polite"></p></div></div></div></div><div class="qtype" data-type="多选题"><div class="qt-head"><span class="qt-name">多选题</span><span class="qt-n">1 题</span></div><div class="oq-list"><div class="oq" data-no="10" data-type="多选题" data-ans="ABCDEF" data-search="和其他先进制造技术相比，快速原型技术具有如下特点（　）。 自由成型制造 制造过程快速 添加式和数字化驱动成型方式 技术高度集成 突出的经济效益 广泛的应用领域 ABCDEF"><span class="oq-n">10</span><div class="oq-main"><p class="oq-q">和其他先进制造技术相比，快速原型技术具有如下特点（　）。</p><div class="oq-opts" data-multi="1"><button class="opt" type="button" data-k="A"><b>A</b>自由成型制造</button><button class="opt" type="button" data-k="B"><b>B</b>制造过程快速</button><button class="opt" type="button" data-k="C"><b>C</b>添加式和数字化驱动成型方式</button><button class="opt" type="button" data-k="D"><b>D</b>技术高度集成</button><button class="opt" type="button" data-k="E"><b>E</b>突出的经济效益</button><button class="opt" type="button" data-k="F"><b>F</b>广泛的应用领域</button></div><button class="oq-check" type="button">对答案</button><p class="oq-ans">答案<b>ABCDEF</b></p><p class="oq-fb" aria-live="polite"></p></div></div></div></div><div class="qtype" data-type="判断题"><div class="qt-head"><span class="qt-name">判断题</span><span class="qt-n">23 题</span></div><div class="oq-list"><div class="oq" data-no="11" data-type="判断题" data-ans="对" data-search="增材制造是一种利用三维模型数据通过连接材料获得实体的工艺，通常为逐层叠加，是与去除材料的制造方法截然不同的工艺。（　） 对"><span class="oq-n">11</span><div class="oq-main"><p class="oq-q">增材制造是一种利用三维模型数据通过连接材料获得实体的工艺，通常为逐层叠加，是与去除材料的制造方法截然不同的工艺。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="12" data-type="判断题" data-ans="对" data-search="所有的增材制造系统按使用材料的形态方式可以简单地分为：液态材料，固态材料，粉末材料。（　） 对"><span class="oq-n">12</span><div class="oq-main"><p class="oq-q">所有的增材制造系统按使用材料的形态方式可以简单地分为：液态材料，固态材料，粉末材料。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="13" data-type="判断题" data-ans="对" data-search="快速成型技术也被称为增材制造，传统加工技术被称为减材或等材技术。（　） 对"><span class="oq-n">13</span><div class="oq-main"><p class="oq-q">快速成型技术也被称为增材制造，传统加工技术被称为减材或等材技术。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="14" data-type="判断题" data-ans="对" data-search="3D实体化模型，由两种方式获得，一个是计算机设计模型，一个是物理实体或零件的扫描模型。（　） 对"><span class="oq-n">14</span><div class="oq-main"><p class="oq-q">3D实体化模型，由两种方式获得，一个是计算机设计模型，一个是物理实体或零件的扫描模型。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="15" data-type="判断题" data-ans="对" data-search="UG、Pro/E、Solidworks、AutoCAD、3Ds MAX都是常用的CAD模型的三维造型软件有。（　） 对"><span class="oq-n">15</span><div class="oq-main"><p class="oq-q">UG、Pro/E、Solidworks、AutoCAD、3Ds MAX都是常用的CAD模型的三维造型软件有。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="16" data-type="判断题" data-ans="错" data-search="STL这种文件格式是利用最简单的多边形和三角形逼近模型表面。（　） 错"><span class="oq-n">16</span><div class="oq-main"><p class="oq-q">STL这种文件格式是利用最简单的多边形和三角形逼近模型表面。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>错</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="17" data-type="判断题" data-ans="错" data-search="SLA技术可打印金属部件（　） 错"><span class="oq-n">17</span><div class="oq-main"><p class="oq-q">SLA技术可打印金属部件（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>错</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="18" data-type="判断题" data-ans="对" data-search="光敏树脂是在紫外光的照射下能迅速发生光聚合反应，分子量急剧增大，材料也就从液态转变成固态。（　） 对"><span class="oq-n">18</span><div class="oq-main"><p class="oq-q">光敏树脂是在紫外光的照射下能迅速发生光聚合反应，分子量急剧增大，材料也就从液态转变成固态。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="19" data-type="判断题" data-ans="对" data-search="光固化成型工艺中用来刮去每层多余树脂的装置是刮板或刮刀。 对"><span class="oq-n">19</span><div class="oq-main"><p class="oq-q">光固化成型工艺中用来刮去每层多余树脂的装置是刮板或刮刀。</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="20" data-type="判断题" data-ans="错" data-search="LOM打印技术的原材料是金属粉末。（　） 错"><span class="oq-n">20</span><div class="oq-main"><p class="oq-q">LOM打印技术的原材料是金属粉末。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>错</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="21" data-type="判断题" data-ans="对" data-search="叠层实体制造工艺常用激光器为CO2激光器。 对"><span class="oq-n">21</span><div class="oq-main"><p class="oq-q">叠层实体制造工艺常用激光器为CO2激光器。</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="22" data-type="判断题" data-ans="对" data-search="SLS技术打印的金属零部件致密度不能达到100%。（　） 对"><span class="oq-n">22</span><div class="oq-main"><p class="oq-q">SLS技术打印的金属零部件致密度不能达到100%。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="23" data-type="判断题" data-ans="错" data-search="SLS技术最重要的使用领域是塑料材料成型。（　） 错"><span class="oq-n">23</span><div class="oq-main"><p class="oq-q">SLS技术最重要的使用领域是塑料材料成型。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>错</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="24" data-type="判断题" data-ans="对" data-search="SLS技术是指选区激光烧结技术。（　） 对"><span class="oq-n">24</span><div class="oq-main"><p class="oq-q">SLS技术是指选区激光烧结技术。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="25" data-type="判断题" data-ans="对" data-search="熔融沉积快速成型工艺可以同时成型两种或以上材料（　）。 对"><span class="oq-n">25</span><div class="oq-main"><p class="oq-q">熔融沉积快速成型工艺可以同时成型两种或以上材料（　）。</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="26" data-type="判断题" data-ans="对" data-search="FDM中要将材料加热到其熔点以上。加热的设备主要是喷头。（　） 对"><span class="oq-n">26</span><div class="oq-main"><p class="oq-q">FDM中要将材料加热到其熔点以上。加热的设备主要是喷头。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="27" data-type="判断题" data-ans="对" data-search="FDM 3D打印技术成型件的后处理过程中最关键的步骤是去除支撑部分。（　） 对"><span class="oq-n">27</span><div class="oq-main"><p class="oq-q">FDM 3D打印技术成型件的后处理过程中最关键的步骤是去除支撑部分。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="28" data-type="判断题" data-ans="对" data-search="3D打印机可以自由移动，并制造出比自身体积还要庞大的物品（　） 对"><span class="oq-n">28</span><div class="oq-main"><p class="oq-q">3D打印机可以自由移动，并制造出比自身体积还要庞大的物品（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="29" data-type="判断题" data-ans="对" data-search="3D打印技术只是增材制造的一种（　） 对"><span class="oq-n">29</span><div class="oq-main"><p class="oq-q">3D打印技术只是增材制造的一种（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="30" data-type="判断题" data-ans="错" data-search="3D打印技术制造的金属零部件性能可超过锻造水平。（　） 错"><span class="oq-n">30</span><div class="oq-main"><p class="oq-q">3D打印技术制造的金属零部件性能可超过锻造水平。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>错</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="31" data-type="判断题" data-ans="错" data-search="3DP打印快速成型的精度高于光固化成型精度。（　） 错"><span class="oq-n">31</span><div class="oq-main"><p class="oq-q">3DP打印快速成型的精度高于光固化成型精度。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>错</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="32" data-type="判断题" data-ans="对" data-search="快速成型技术的优势之一在于能将设计师的构思模型快速变为实物模型。（　） 对"><span class="oq-n">32</span><div class="oq-main"><p class="oq-q">快速成型技术的优势之一在于能将设计师的构思模型快速变为实物模型。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="33" data-type="判断题" data-ans="对" data-search="快速成型技术在金属增材制造中使用最多的技术是SLS。（　） 对"><span class="oq-n">33</span><div class="oq-main"><p class="oq-q">快速成型技术在金属增材制造中使用最多的技术是SLS。（　）</p><div class="oq-opts judge"><button class="opt" type="button" data-k="对">对</button><button class="opt" type="button" data-k="错">错</button></div><p class="oq-ans">答案<b>对</b></p><p class="oq-fb" aria-live="polite"></p></div></div></div></div><div class="qtype" data-type="填空题"><div class="qt-head"><span class="qt-name">填空题</span><span class="qt-n">17 题</span></div><div class="oq-list"><div class="oq" data-no="34" data-type="填空题" data-ans="弦差" data-search="STL文件逼近CAD模型的精度指标表面上是小三角形的数量，实质上是三角形平面逼近曲面时的____的大小。 弦差"><span class="oq-n">34</span><div class="oq-main"><p class="oq-q">STL文件逼近CAD模型的精度指标表面上是小三角形的数量，实质上是三角形平面逼近曲面时的____的大小。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>弦差</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="35" data-type="填空题" data-ans="概念设计" data-search="设计三维模型方法有____和反求工程两种主要途径。 概念设计"><span class="oq-n">35</span><div class="oq-main"><p class="oq-q">设计三维模型方法有____和反求工程两种主要途径。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>概念设计</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="36" data-type="填空题" data-ans="拼接；（第二空答案原图缺失）" data-search="在实际快速原型制作中，如果所要制作的原型尺寸相对于快速成型系统台面尺寸过大或过小，就必须对STL模型进行（　）处理或者进行（　）处理。 拼接；（第二空答案原图缺失）"><span class="oq-n">36</span><div class="oq-main"><p class="oq-q">在实际快速原型制作中，如果所要制作的原型尺寸相对于快速成型系统台面尺寸过大或过小，就必须对STL模型进行（　）处理或者进行（　）处理。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label><label class="blank-w"><input class="blank" type="text" data-i="1" autocomplete="off" spellcheck="false" placeholder="第 2 空"></label></div><p class="oq-ans">答案<b>拼接；（第二空答案原图缺失）</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="37" data-type="填空题" data-ans="STL切片；直接切片" data-search="快速成型系统切片软件的切片方式一般有____和____两种形式。 STL切片；直接切片"><span class="oq-n">37</span><div class="oq-main"><p class="oq-q">快速成型系统切片软件的切片方式一般有____和____两种形式。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label><label class="blank-w"><input class="blank" type="text" data-i="1" autocomplete="off" spellcheck="false" placeholder="第 2 空"></label></div><p class="oq-ans">答案<b>STL切片；直接切片</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="38" data-type="填空题" data-ans="直接STL；容错；顶层厚；适应性" data-search="STL切片包括____切片、____切片、____切片、____切片。（注：按课件中学习的先后顺序回答） 直接STL；容错；顶层厚；适应性"><span class="oq-n">38</span><div class="oq-main"><p class="oq-q">STL切片包括____切片、____切片、____切片、____切片。（注：按课件中学习的先后顺序回答）</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label><label class="blank-w"><input class="blank" type="text" data-i="1" autocomplete="off" spellcheck="false" placeholder="第 2 空"></label><label class="blank-w"><input class="blank" type="text" data-i="2" autocomplete="off" spellcheck="false" placeholder="第 3 空"></label><label class="blank-w"><input class="blank" type="text" data-i="3" autocomplete="off" spellcheck="false" placeholder="第 4 空"></label></div><p class="oq-ans">答案<b>直接STL；容错；顶层厚；适应性</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="39" data-type="填空题" data-ans="STL" data-search="美国3D Systems公司开发的____文件格式可以被大多数快速成型机所接受，因此被工业界认为是目前快速成型数据的标准格式。（注：用大写字母回答） STL"><span class="oq-n">39</span><div class="oq-main"><p class="oq-q">美国3D Systems公司开发的____文件格式可以被大多数快速成型机所接受，因此被工业界认为是目前快速成型数据的标准格式。（注：用大写字母回答）</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>STL</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="40" data-type="填空题" data-ans="前处理；后处理" data-search="快速成型过程总体上分为三个阶段，分别是：____、分层叠加成型(自由成型)、____。 前处理；后处理"><span class="oq-n">40</span><div class="oq-main"><p class="oq-q">快速成型过程总体上分为三个阶段，分别是：____、分层叠加成型(自由成型)、____。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label><label class="blank-w"><input class="blank" type="text" data-i="1" autocomplete="off" spellcheck="false" placeholder="第 2 空"></label></div><p class="oq-ans">答案<b>前处理；后处理</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="41" data-type="填空题" data-ans="±0.1" data-search="SLA原型的尺寸精度可以达到（　）mm。 ±0.1"><span class="oq-n">41</span><div class="oq-main"><p class="oq-q">SLA原型的尺寸精度可以达到（　）mm。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>±0.1</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="42" data-type="填空题" data-ans="涂布形状；涂布厚度" data-search="叠层实体制造工艺涂布工艺包括____和____。 涂布形状；涂布厚度"><span class="oq-n">42</span><div class="oq-main"><p class="oq-q">叠层实体制造工艺涂布工艺包括____和____。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label><label class="blank-w"><input class="blank" type="text" data-i="1" autocomplete="off" spellcheck="false" placeholder="第 2 空"></label></div><p class="oq-ans">答案<b>涂布形状；涂布厚度</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="43" data-type="填空题" data-ans="SLS" data-search="选择性激光烧结工艺又称为选区激光烧结，其英文缩写是（　）。 SLS"><span class="oq-n">43</span><div class="oq-main"><p class="oq-q">选择性激光烧结工艺又称为选区激光烧结，其英文缩写是（　）。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>SLS</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="44" data-type="填空题" data-ans="低" data-search="利用选择性激光烧结工艺获得的制件表面精度（　）于利用光固化成型工艺获得的表面精度。 低"><span class="oq-n">44</span><div class="oq-main"><p class="oq-q">利用选择性激光烧结工艺获得的制件表面精度（　）于利用光固化成型工艺获得的表面精度。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>低</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="45" data-type="填空题" data-ans="LOM" data-search="主要使用薄片材料为成型材料的快速成型技术是____。（注：用大写英文缩写回答） LOM"><span class="oq-n">45</span><div class="oq-main"><p class="oq-q">主要使用薄片材料为成型材料的快速成型技术是____。（注：用大写英文缩写回答）</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>LOM</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="46" data-type="填空题" data-ans="SLA" data-search="快速成型的各种技术中使用光敏树脂的技术是____。（注：用大写英文缩写字母回答） SLA"><span class="oq-n">46</span><div class="oq-main"><p class="oq-q">快速成型的各种技术中使用光敏树脂的技术是____。（注：用大写英文缩写字母回答）</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>SLA</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="47" data-type="填空题" data-ans="SLS" data-search="____成型工艺可成型的材料包括塑料粉末、陶瓷粉末、金属粉末等材料。（注：用大写英文缩写回答） SLS"><span class="oq-n">47</span><div class="oq-main"><p class="oq-q">____成型工艺可成型的材料包括塑料粉末、陶瓷粉末、金属粉末等材料。（注：用大写英文缩写回答）</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>SLS</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="48" data-type="填空题" data-ans="增材" data-search="和传统去除材料的加工制造方式相比较，快速成型制造属于____制造。 增材"><span class="oq-n">48</span><div class="oq-main"><p class="oq-q">和传统去除材料的加工制造方式相比较，快速成型制造属于____制造。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>增材</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="49" data-type="填空题" data-ans="硅橡胶" data-search="软模通常指的是____模具。 硅橡胶"><span class="oq-n">49</span><div class="oq-main"><p class="oq-q">软模通常指的是____模具。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label></div><p class="oq-ans">答案<b>硅橡胶</b></p><p class="oq-fb" aria-live="polite"></p></div></div><div class="oq" data-no="50" data-type="填空题" data-ans="软模；硬模" data-search="常用的快速制模方法有____、过渡模具和____。 软模；硬模"><span class="oq-n">50</span><div class="oq-main"><p class="oq-q">常用的快速制模方法有____、过渡模具和____。</p><div class="oq-fill"><label class="blank-w"><input class="blank" type="text" data-i="0" autocomplete="off" spellcheck="false" placeholder="第 1 空"></label><label class="blank-w"><input class="blank" type="text" data-i="1" autocomplete="off" spellcheck="false" placeholder="第 2 空"></label></div><p class="oq-ans">答案<b>软模；硬模</b></p><p class="oq-fb" aria-live="polite"></p></div></div></div></div></section>
 <div id="qView" class="qview" hidden><div class="qview-head">纯题目版 · 36 题<span>点任一题目跳回答案</span></div><div class="qlist">
 <button class="qitem" data-gid="q01" style="--ch:#4f46e5"><span class="n">01</span><span class="t">何谓快速成形（快速原型）？</span><span class="c">概论</span></button>
 <button class="qitem" data-gid="q02" style="--ch:#4f46e5"><span class="n">02</span><span class="t">快速成形技术的主要特点？</span><span class="c">概论</span></button>
@@ -1002,6 +1212,47 @@ h1 em{
 <div class="empty" id="emptyBox" hidden>没有匹配的题目，换个关键词试试</div>
 </main>
 </div>
+<aside class="rail" id="rail" aria-label="快速跳转">
+<div class="rail-h">简答</div><div class="rail-grid">
+<a href="#q01" data-t="q01" style="--c:#4f46e5" title="何谓快速成形（快速原型）？">01</a>
+<a href="#q02" data-t="q02" style="--c:#4f46e5" title="快速成形技术的主要特点？">02</a>
+<a href="#q03" data-t="q03" style="--c:#4f46e5" title="快速原型制造技术的原理？">03</a>
+<a href="#q04" data-t="q04" style="--c:#4f46e5" title="快速成型方法同传统成形方法的区别？">04</a>
+<a href="#q05" data-t="q05" style="--c:#0d9488" title="CAD三维模型的构建方法？">05</a>
+<a href="#q06" data-t="q06" style="--c:#0d9488" title="反求工程、应用及方法？">06</a>
+<a href="#q07" data-t="q07" style="--c:#0d9488" title="何谓反求？反求工程优势？">07</a>
+<a href="#q08" data-t="q08" style="--c:#0d9488" title="STL文件的精度？">08</a>
+<a href="#q09" data-t="q09" style="--c:#0d9488" title="快速成型工艺中的主要切片方式及分类？">09</a>
+<a href="#q10" data-t="q10" style="--c:#0d9488" title="何谓STL文件的分割与拼接？">10</a>
+<a href="#q11" data-t="q11" style="--c:#d97706" title="RP技术在前处理阶段主要工作有哪些？">11</a>
+<a href="#q12" data-t="q12" style="--c:#d97706" title="快速成型制造技术的工艺过程？">12</a>
+<a href="#q13" data-t="q13" style="--c:#d97706" title="比较几种典型的快速成型工艺的名称、成型材料、激光器、支撑的情况？">13</a>
+<a href="#q14" data-t="q14" style="--c:#d97706" title="光固化成型支撑的作用和类型？">14</a>
+<a href="#q15" data-t="q15" style="--c:#d97706" title="何谓微光固化快速成型？">15</a>
+<a href="#q16" data-t="q16" style="--c:#d97706" title="以光固化成型工艺为例，说明成型一个原型件（零件）的一般过程？">16</a>
+<a href="#q17" data-t="q17" style="--c:#d97706" title="表面涂覆的必要性（好处）？">17</a>
+<a href="#q18" data-t="q18" style="--c:#d97706" title="选择性激光烧结工艺的基本原理及优缺点？">18</a>
+<a href="#q19" data-t="q19" style="--c:#d97706" title="SLS工艺制备金属产品的过程？（从间接制作金属产品和直接制作金属产品两方面回答）">19</a>
+<a href="#q20" data-t="q20" style="--c:#d97706" title="双喷头熔融沉积成型的工作原理、优缺点？">20</a>
+<a href="#q21" data-t="q21" style="--c:#d97706" title="比较气压式熔融沉积（AJS）快速成形系统与传统的FDM成型系统的区别？">21</a>
+<a href="#q22" data-t="q22" style="--c:#d97706" title="何谓3D(或3DP)打印？">22</a>
+<a href="#q23" data-t="q23" style="--c:#d97706" title="3DP快速成型技术分类及其原理？">23</a>
+<a href="#q24" data-t="q24" style="--c:#7c3aed" title="简述快速成型工艺对成型材料性能的总体要求？">24</a>
+<a href="#q25" data-t="q25" style="--c:#7c3aed" title="影响堆积成型（FDM）的熔丝材料的相关特性有哪些？">25</a>
+<a href="#q26" data-t="q26" style="--c:#7c3aed" title="FDM工艺对支撑材料的要求有哪些？">26</a>
+<a href="#q27" data-t="q27" style="--c:#7c3aed" title="适合选择性激光烧结快速成型工艺的材料有哪些？">27</a>
+<a href="#q28" data-t="q28" style="--c:#db2777" title="何谓快速模具制造技术（RT）？">28</a>
+<a href="#q29" data-t="q29" style="--c:#db2777" title="常用的快速制模方法有哪些？">29</a>
+<a href="#q30" data-t="q30" style="--c:#db2777" title="硅橡胶模具在新产品试制或者单件、小批量生产时表现出的优点有哪些？">30</a>
+<a href="#q31" data-t="q31" style="--c:#db2777" title="何谓硬模？何谓间接方式制造硬模？">31</a>
+<a href="#q32" data-t="q32" style="--c:#db2777" title="金属粉末的选择性激光烧结制作模具的方法，按其使用金属粉末的组成情况，有几种制模方式？分别是什么？">32</a>
+<a href="#q33" data-t="q33" style="--c:#2563eb" title="举例说明快速原型在产品设计中的应用？">33</a>
+<a href="#q34" data-t="q34" style="--c:#2563eb" title="快速成型技术的应用领域？">34</a>
+<a href="#q35" data-t="q35" style="--c:#2563eb" title="快速成型技术在医学领域有哪些应用？">35</a>
+<a href="#q36" data-t="q36" style="--c:#2563eb" title="快速成型技术产业面临的挑战？目前快速成型技术与传统制造业的关系？">36</a>
+</div>
+<a class="rail-part" href="#part2" data-t="part2">测验<b>50</b></a>
+</aside>
 <button id="totop" type="button" title="回到顶部">↑</button>
 <div id="toast"></div>
 <script>
@@ -1021,6 +1272,7 @@ h1 em{
   var cards   = $$(".q");
   var blocks  = $$(".ans");
   var oqItems = $$(".oq");
+  var railSync = function () {};
 
   var favZone  = $("#favZone"),
       favCards = $("#favCards"),
@@ -1230,15 +1482,229 @@ h1 em{
   }
 
   /* ------------------------------------------------------------------
-     6. 客观题：一键遮住 / 显示答案（自测用）
+     6. 客观题作答：选择 / 判断 / 填空，即时判对错
      ------------------------------------------------------------------ */
-  var btnAns = $("#btnAns");
+  var OQ_KEY   = "rp-v6-obj";
+  var oqState  = {};
+  var scoreEl  = $("#score");
+  var btnAns   = $("#btnAns");
+  var btnReset = $("#btnReset");
+
+  try { oqState = JSON.parse(localStorage.getItem(OQ_KEY) || "{}") || {}; } catch (e) { oqState = {}; }
+
+  function oqSave() {
+    try { localStorage.setItem(OQ_KEY, JSON.stringify(oqState)); } catch (e) {}
+  }
+  function oqNo(el)   { return el.getAttribute("data-no"); }
+  function oqKind(el) { return el.getAttribute("data-type"); }
+  function oqAns(el)  { return (el.getAttribute("data-ans") || "").trim(); }
+  function squeeze(s) {
+    return String(s || "")
+      .replace(/[\s\u3000]/g, "")
+      .replace(/[（）()]/g, "")
+      .replace(/[。．.,，、]/g, "")
+      .toLowerCase();
+  }
+  function oqClear(el) {
+    el.classList.remove("done", "ok", "bad");
+    var fb = $(".oq-fb", el);
+    if (fb) fb.innerHTML = "";
+    $$(".opt", el).forEach(function (b) { b.classList.remove("on", "ok", "bad"); });
+    $$(".blank", el).forEach(function (b) { b.classList.remove("ok", "bad"); });
+  }
+  function oqFeedback(el, ok, detail, note) {
+    el.classList.add("done");
+    el.classList.toggle("ok", ok);
+    el.classList.toggle("bad", !ok);
+    var fb = $(".oq-fb", el);
+    if (!fb) return;
+    var html = ok
+      ? '<span class="fb-ok">\u2713 正确</span>'
+      : '<span class="fb-bad">\u2717 正确答案：' + detail + '</span>';
+    if (note) html += '<span class="fb-note">' + note + '</span>';
+    fb.innerHTML = html;
+  }
+  function oqScore() {
+    var done = 0, ok = 0;
+    oqItems.forEach(function (q) {
+      if (q.classList.contains("done")) { done++; if (q.classList.contains("ok")) ok++; }
+    });
+    if (scoreEl) scoreEl.textContent = "已答 " + done + " / " + oqItems.length + " · 正确 " + ok;
+  }
+
+  /* 单项选择 / 判断 */
+  function evalPick(el, k) {
+    var ans = oqAns(el);
+    var ok  = k === ans;
+    $$(".opt", el).forEach(function (b) { b.classList.remove("ok", "bad", "on"); });
+    var got = $('.opt[data-k="' + k + '"]', el);
+    if (got) got.classList.add(ok ? "ok" : "bad");
+    if (!ok) {
+      var right = $('.opt[data-k="' + ans + '"]', el);
+      if (right) right.classList.add("ok");
+    }
+    oqFeedback(el, ok, ans);
+    return ok;
+  }
+
+  /* 多项选择 */
+  function evalMulti(el) {
+    var answers = oqAns(el).split("").filter(function (c) { return /[A-F]/.test(c); });
+    var picked  = $$(".opt", el)
+                    .filter(function (b) { return b.classList.contains("on"); })
+                    .map(function (b) { return b.getAttribute("data-k"); });
+    var ok = picked.length === answers.length &&
+             answers.every(function (k) { return picked.indexOf(k) >= 0; });
+    $$(".opt", el).forEach(function (b) {
+      var k = b.getAttribute("data-k");
+      b.classList.remove("ok", "bad");
+      if (answers.indexOf(k) >= 0) b.classList.add("ok");
+      else if (b.classList.contains("on")) b.classList.add("bad");
+    });
+    oqFeedback(el, ok, answers.join(""));
+    return ok;
+  }
+
+  /* 填空 */
+  function evalFill(el) {
+    var parts  = oqAns(el).split(/[；;]/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var inputs = $$(".blank", el);
+    var ok = true, notes = [];
+    inputs.forEach(function (inp, i) {
+      var want = parts[i] || "";
+      var val  = inp.value.trim();
+      var open = /缺失|未显示|原图/.test(want);
+      var good;
+      if (open) {
+        good = true;
+        notes.push("第 " + (i + 1) + " 空原图缺失，不作判分");
+      } else {
+        good = !!val && squeeze(val) === squeeze(want);
+      }
+      if (!good) ok = false;
+      inp.classList.toggle("ok", good);
+      inp.classList.toggle("bad", !good);
+    });
+    oqFeedback(el, ok, parts.join("；"), notes.join("；"));
+    return ok;
+  }
+
+  oqItems.forEach(function (el) {
+    var kind = oqKind(el);
+
+    if (kind === "单选题" || kind === "判断题") {
+      $$(".opt", el).forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var k = btn.getAttribute("data-k");
+          var st = oqState[oqNo(el)] || {};
+          st.k = k; st.d = 1;
+          oqState[oqNo(el)] = st;
+          oqSave();
+          evalPick(el, k);
+          oqScore();
+        });
+      });
+    } else if (kind === "多选题") {
+      $$(".opt", el).forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          btn.classList.toggle("on");
+          el.classList.remove("done", "ok", "bad");
+          var fb = $(".oq-fb", el);
+          if (fb) fb.innerHTML = "";
+          $$(".opt", el).forEach(function (b) { b.classList.remove("ok", "bad"); });
+          var st = oqState[oqNo(el)] || {};
+          st.m = $$(".opt.on", el).map(function (b) { return b.getAttribute("data-k"); });
+          st.d = 0;
+          oqState[oqNo(el)] = st;
+          oqSave();
+          oqScore();
+        });
+      });
+      var check = $(".oq-check", el);
+      if (check) check.addEventListener("click", function () {
+        if (!$$(".opt.on", el).length) { toastMsg("先选至少一个选项"); return; }
+        var ok = evalMulti(el);
+        var st = oqState[oqNo(el)] || {};
+        st.m = $$(".opt.on", el).map(function (b) { return b.getAttribute("data-k"); });
+        st.d = 1;
+        oqState[oqNo(el)] = st;
+        oqSave();
+        oqScore();
+      });
+    } else {
+      var timer;
+      $$(".blank", el).forEach(function (inp) {
+        inp.addEventListener("input", function () {
+          el.classList.remove("done", "ok", "bad");
+          var fb = $(".oq-fb", el);
+          if (fb) fb.innerHTML = "";
+          inp.classList.remove("ok", "bad");
+          var st = oqState[oqNo(el)] || {};
+          st.t = $$(".blank", el).map(function (b) { return b.value; });
+          st.d = 0;
+          oqState[oqNo(el)] = st;
+          clearTimeout(timer);
+          timer = setTimeout(oqSave, 400);
+        });
+        inp.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); inp.blur(); }
+        });
+        inp.addEventListener("blur", function () {
+          var any = $$(".blank", el).some(function (b) { return b.value.trim(); });
+          if (!any) return;
+          var ok = evalFill(el);
+          var st = oqState[oqNo(el)] || {};
+          st.t = $$(".blank", el).map(function (b) { return b.value; });
+          st.d = 1;
+          oqState[oqNo(el)] = st;
+          oqSave();
+          oqScore();
+        });
+      });
+    }
+  });
+
+  /* 恢复上次作答 */
+  oqItems.forEach(function (el) {
+    var st = oqState[oqNo(el)];
+    if (!st) return;
+    var kind = oqKind(el);
+    if (kind === "单选题" || kind === "判断题") {
+      if (st.k) evalPick(el, st.k);
+    } else if (kind === "多选题") {
+      $$(".opt", el).forEach(function (b) {
+        if ((st.m || []).indexOf(b.getAttribute("data-k")) >= 0) b.classList.add("on");
+      });
+      if (st.d && (st.m || []).length) evalMulti(el);
+    } else if (st.t) {
+      $$(".blank", el).forEach(function (b, i) { b.value = st.t[i] || ""; });
+      if (st.d) evalFill(el);
+    }
+  });
+  oqScore();
+
+  /* 显示 / 隐藏全部答案 */
   if (btnAns && part2) {
+    btnAns.textContent = part2.classList.contains("ans-off") ? "显示全部答案" : "隐藏全部答案";
+    btnAns.classList.toggle("on", !part2.classList.contains("ans-off"));
     btnAns.addEventListener("click", function () {
       var off = part2.classList.toggle("ans-off");
-      btnAns.textContent = off ? "显示答案" : "隐藏答案";
-      btnAns.classList.toggle("on", off);
-      toastMsg(off ? "已遮住答案，可以自测" : "已显示答案");
+      btnAns.textContent = off ? "显示全部答案" : "隐藏全部答案";
+      btnAns.classList.toggle("on", !off);
+    });
+  }
+
+  /* 重做 */
+  if (btnReset && part2) {
+    btnReset.addEventListener("click", function () {
+      oqState = {};
+      oqSave();
+      oqItems.forEach(function (el) {
+        oqClear(el);
+        $$(".blank", el).forEach(function (b) { b.value = ""; });
+      });
+      oqScore();
+      toastMsg("已清空作答，可以重做");
     });
   }
 
@@ -1253,6 +1719,7 @@ h1 em{
     favZone.hidden = on || favs.length === 0;
     btnQ.classList.toggle("on", on);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    railSync();
   }
   if (btnQ) {
     btnQ.addEventListener("click", function () { showQOnly(qView.hidden); });
@@ -1299,7 +1766,50 @@ h1 em{
   });
 
   /* ------------------------------------------------------------------
-     8. 入场动画（只对进入视口的题目生效，避免任何情况下的空白）
+     8. 外框外侧的快速跳转导航（简答 01–36 + 测验）
+     ------------------------------------------------------------------ */
+  var rail = $("#rail");
+  if (rail) {
+    var railLinks = $$("a", rail);
+
+    railSync = function () {
+      var wide = window.innerWidth >= 1280;
+      var y = window.scrollY;
+      var show = wide && y > 180 && qView.hidden;
+      rail.classList.toggle("show", show);
+      if (!show) {
+        railLinks.forEach(function (a) { a.classList.remove("on"); });
+        return;
+      }
+
+      var probe = y + Math.round(window.innerHeight * 0.32);
+      var activeT = null;
+      cards.forEach(function (c) {
+        var top = c.getBoundingClientRect().top + y;
+        if (top <= probe) activeT = "q" + c.getAttribute("data-gid");
+      });
+      if (part2 && !part2.hidden) {
+        var ptop = part2.getBoundingClientRect().top + y;
+        if (ptop <= probe) activeT = "part2";
+      }
+      railLinks.forEach(function (a) {
+        a.classList.toggle("on", a.getAttribute("data-t") === activeT);
+      });
+    };
+
+    var lastY = -1;
+    window.addEventListener("scroll", function () {
+      var y = window.scrollY;
+      if (y === lastY) return;
+      lastY = y;
+      railSync();
+    }, { passive: true });
+    window.addEventListener("resize", railSync);
+    railSync();
+  }
+
+  /* ------------------------------------------------------------------
+     9. 入场动画（只对进入视口的题目生效，避免任何情况下的空白）
      ------------------------------------------------------------------ */
   var revealables = $$(".chapter .q, .ch-head");
   if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
